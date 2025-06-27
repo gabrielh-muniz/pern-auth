@@ -253,3 +253,63 @@ export async function forgotPassword(req, res) {
 
   res.status(200).json({ message: "Password reset email sent successfully" });
 }
+
+/**
+ * Reset password controller function
+ * @param {Object} req - The request object
+ * @param {Object} res - The response object
+ * @returns {Promise<void>}
+ */
+export async function resetPassword(req, res) {
+  const { token } = req.query;
+  const { password } = req.body;
+
+  if (!token) return res.status(400).json({ message: "Token is required" });
+  if (!password)
+    return res.status(400).json({ message: "New password is required" });
+
+  // Verify if the token is valid in the database
+  const [errorToken, result] = await catchError(
+    query("SELECT * FROM users WHERE reset_pw_token = $1", [token])
+  );
+  if (errorToken) {
+    console.error("Error checking reset password token:", errorToken);
+    return res.status(500).json({ message: "Database error" });
+  }
+  if (
+    result.rows.length === 0 ||
+    new Date(result.rows[0].reset_pw_expires_at) < new Date()
+  )
+    return res.status(400).json({ message: "Invalid or expired token" });
+
+  const user = result.rows[0];
+
+  // Validate the new password
+  if (password.length < 6)
+    return res
+      .status(400)
+      .json({ message: "New password must be at least 6 characters long" });
+
+  // Hash the new password
+  const [errorHash, hashedPassword] = await catchError(
+    bcrypt.hash(password, 10)
+  );
+  if (errorHash) {
+    console.error("Error hashing new password:", errorHash);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+
+  // Update the user's password in the database
+  const [errorUpdate, resultUpdate] = await catchError(
+    query(
+      "UPDATE users SET pw = $1, reset_pw_token = NULL, reset_pw_expires_at = NULL WHERE id = $2 RETURNING *",
+      [hashedPassword, user.id]
+    )
+  );
+  if (errorUpdate) {
+    console.error("Error updating user password:", errorUpdate);
+    return res.status(500).json({ message: "Database error" });
+  }
+
+  res.status(200).json({ message: "Password reset successful" });
+}

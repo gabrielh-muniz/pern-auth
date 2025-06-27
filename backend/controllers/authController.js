@@ -3,7 +3,12 @@ import { query } from "../db/connection.js";
 import bcrypt from "bcrypt";
 import { generateVerificationToken } from "../utils/generateToken.js";
 import { generateJWTToken } from "../utils/generateToken.js";
-import { sendVerificationEmail, sendWelcomeEmail } from "../services/email.js";
+import {
+  sendPasswordResetEmail,
+  sendVerificationEmail,
+  sendWelcomeEmail,
+} from "../services/email.js";
+import crypto from "crypto";
 
 /**
  * Signup controller function
@@ -198,4 +203,53 @@ export async function login(req, res) {
 export async function logout(req, res) {
   res.clearCookie("token");
   res.status(200).json({ message: "Logout successful" });
+}
+
+/**
+ * Forgot password controller function
+ * @param {Object} req - The request object
+ * @param {Object} res - The response object
+ * @returns {Promise<void>}
+ */
+export async function forgotPassword(req, res) {
+  const { email } = req.body;
+
+  if (!email) return res.status(400).json({ message: "Email is required" });
+
+  // Verify if user exists
+  const [errorEmail, result] = await catchError(
+    query("SELECT * FROM users WHERE email = $1", [email])
+  );
+  if (errorEmail) {
+    console.error("Error checking for existing user:", errorEmail);
+    return res.status(500).json({ message: "Database error" });
+  }
+  if (result.rows.length === 0)
+    return res.status(400).json({ message: "User not found" });
+
+  const user = result.rows[0];
+
+  // Generate a reset password token
+  const resetPasswordToken = crypto.randomBytes(32).toString("hex");
+  const resetPasswordTokenExpiresAt = new Date(
+    Date.now() + 1 * 60 * 60 * 1000 // 1 hour from now
+  ).toISOString();
+
+  // update the user with the reset password token
+  const [errorUpdate, resultUpdate] = await catchError(
+    query(
+      "UPDATE users SET reset_pw_token = $1, reset_pw_expires_at = $2 WHERE id = $3 RETURNING *",
+      [resetPasswordToken, resetPasswordTokenExpiresAt, user.id]
+    )
+  );
+  if (errorUpdate) {
+    console.error("Error updating user with reset token:", errorUpdate);
+    return res.status(500).json({ message: "Database error" });
+  }
+
+  // Send a password reset email
+  const resetPasswordURL = `${process.env.FRONTEND_URL}/reset-password?token=${resetPasswordToken}`;
+  await sendPasswordResetEmail(user.email, resetPasswordURL, user.name);
+
+  res.status(200).json({ message: "Password reset email sent successfully" });
 }

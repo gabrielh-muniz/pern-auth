@@ -313,3 +313,25 @@ export async function resetPassword(req, res) {
 
   res.status(200).json({ message: "Password reset successful" });
 }
+
+/**
+ * Check authentication status
+ * @param {Object} req - The request object
+ * @param {Object} res - The response object
+ * @returns {Promise<void>}
+ */
+export async function checkAuth(req, res) {
+  const user = req.user;
+  if (!user) return res.status(401).json({ message: "Unauthorized" });
+
+  // If the user is authenticated, we could search all the information in the database
+
+  return res.status(200).json({
+    success: true,
+    message: "Authenticated",
+    user: {
+      id: user.id,
+      email: user.email,
+    },
+  });
+}

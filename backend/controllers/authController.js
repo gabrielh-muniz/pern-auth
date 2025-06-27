@@ -136,7 +136,7 @@ export async function verifyEmail(req, res) {
 }
 
 /**
- * Signup controller function
+ * Login controller function
  * @param {Object} req - The request object
  * @param {Object} res - The response object
  * @returns {Promise<void>}
@@ -190,11 +190,12 @@ export async function login(req, res) {
 }
 
 /**
- * Signup controller function
+ * Signout controller function
  * @param {Object} req - The request object
  * @param {Object} res - The response object
  * @returns {Promise<void>}
  */
 export async function logout(req, res) {
-  res.send("Hello from the logout route");
+  res.clearCookie("token");
+  res.status(200).json({ message: "Logout successful" });
 }

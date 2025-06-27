@@ -70,14 +70,14 @@ export async function signup(req, res) {
     return res.status(500).json({ message: "Database error" });
   }
 
-  // Generate a JWT token
-  const user = result.rows[0];
-  const jwtToken = generateJWTToken(user, process.env.SECRET_KEY, "7d");
+  // Generate a JWT token (This is wrong, it should be done in the login function)
+  // const user = result.rows[0];
+  // const jwtToken = generateJWTToken(user, process.env.SECRET_KEY, "7d");
 
-  res.cookie("token", jwtToken, {
-    httpOnly: true,
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-  });
+  // res.cookie("token", jwtToken, {
+  //   httpOnly: true,
+  //   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  // });
 
   // Send a verification email
   await sendVerificationEmail(user.email, verificationToken);
@@ -142,7 +142,51 @@ export async function verifyEmail(req, res) {
  * @returns {Promise<void>}
  */
 export async function login(req, res) {
-  res.send("Hello from the login route");
+  // NOTE: Only login a person if the field is_verified is true
+  const { email, password } = req.body;
+
+  if (!email || !password)
+    return res.status(400).json({ message: "All fields are required" });
+
+  // Verify if user exists
+  const [errorEmail, result] = await catchError(
+    query("SELECT * FROM users WHERE email = $1", [email])
+  );
+  if (errorEmail) {
+    console.error("Error checking for existing user:", errorEmail);
+    return res.status(500).json({ message: "Database error" });
+  }
+  if (result.rows.length === 0)
+    return res.status(400).json({ message: "User does not exist" });
+
+  const user = result.rows[0];
+
+  // Check the password
+  const [errorPassword, isMatch] = await catchError(
+    bcrypt.compare(password, user.pw)
+  );
+  if (errorPassword) {
+    console.error("Error comparing passwords:", errorPassword);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+  if (!isMatch)
+    return res.status(400).json({ message: "Invalid email or password" });
+
+  // Check if the user is verified
+  if (!user.is_verified)
+    return res
+      .status(403)
+      .json({ message: "Email not verified! Please check your inbox" });
+
+  // Generate a JWT token
+  const jwtToken = generateJWTToken(user, process.env.SECRET_KEY, "7d");
+
+  res.cookie("token", jwtToken, {
+    httpOnly: true,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
+
+  res.status(200).json({ message: "Login successful" });
 }
 
 /**

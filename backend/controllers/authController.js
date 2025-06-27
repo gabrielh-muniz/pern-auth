@@ -3,6 +3,7 @@ import { query } from "../db/connection.js";
 import bcrypt from "bcrypt";
 import { generateVerificationToken } from "../utils/generateToken.js";
 import { generateJWTToken } from "../utils/generateToken.js";
+import { sendVerificationEmail, sendWelcomeEmail } from "../services/email.js";
 
 /**
  * Signup controller function
@@ -78,7 +79,60 @@ export async function signup(req, res) {
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   });
 
+  // Send a verification email
+  await sendVerificationEmail(user.email, verificationToken);
+
   res.status(201).json({ message: "User created successfully" });
+}
+
+/**
+ * Function to verify the user's email
+ * @param {Object} req - The request object
+ * @param {Object} res - The response object
+ * @return {Promise<void>}
+ */
+export async function verifyEmail(req, res) {
+  const { verificationToken } = req.body;
+
+  if (!verificationToken)
+    return res.status(400).json({ message: "Token is required" });
+
+  // Check if the token is valid in database
+  const [error, result] = await catchError(
+    query("SELECT * FROM users WHERE verification_token = $1", [
+      verificationToken,
+    ])
+  );
+  if (error) {
+    console.error("Error checking verification token:", error);
+    return res.status(500).json({ message: "Database error" });
+  }
+
+  const user = result.rows[0];
+
+  if (
+    result.rows.length === 0 ||
+    new Date(user.verification_token_expires_at) < new Date()
+  ) {
+    return res.status(400).json({ message: "Invalid or expired token" });
+  }
+
+  // Update the user's verification status
+  const [errorUpdate, resultUpdate] = await catchError(
+    query(
+      "UPDATE users SET is_verified = TRUE, verification_token = NULL, verification_token_expires_at = NULL WHERE id = $1",
+      [user.id]
+    )
+  );
+  if (errorUpdate) {
+    console.error("Error updating user verification status:", errorUpdate);
+    return res.status(500).json({ message: "Database error" });
+  }
+
+  // Send a welcome email
+  await sendWelcomeEmail(user.email, user.name);
+
+  res.status(200).json({ message: "Email verified successfully" });
 }
 
 /**

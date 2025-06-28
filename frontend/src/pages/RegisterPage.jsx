@@ -3,8 +3,32 @@ import { User, Mail, Lock } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const schema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters long").max(50),
+  email: z.string().email("Invalid email address"),
+  password: z
+    .string()
+    .min(6, "Password must be at least 6 characters long")
+    .max(100),
+});
 
 function RegisterPage() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: zodResolver(schema),
+  });
+
+  const onSubmit = (data) => {
+    console.log(data);
+  };
+
   const inputVariants = {
     focus: { scale: 1.05, transition: { duration: 0.3 } },
   };
@@ -18,7 +42,7 @@ function RegisterPage() {
       >
         <h1 className="text-2xl font-bold mb-6 text-center">Sign Up</h1>
 
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
             <motion.div whileFocus="focus" variants={inputVariants}>
@@ -32,10 +56,13 @@ function RegisterPage() {
                   type="text"
                   placeholder="Enter your name"
                   className="pl-10"
-                  required
+                  {...register("name")}
                 />
               </div>
             </motion.div>
+            {errors.name && (
+              <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -51,10 +78,15 @@ function RegisterPage() {
                   type="email"
                   placeholder="Enter your email"
                   className="pl-10"
-                  required
+                  {...register("email")}
                 />
               </div>
             </motion.div>
+            {errors.email && (
+              <p className="mt-1 text-sm text-red-600">
+                {errors.email.message}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -70,15 +102,20 @@ function RegisterPage() {
                   type="password"
                   placeholder="Enter your password"
                   className="pl-10"
-                  required
+                  {...register("password")}
                 />
               </div>
             </motion.div>
+            {errors.password && (
+              <p className="mt-1 text-sm text-red-600">
+                {errors.password.message}
+              </p>
+            )}
           </div>
 
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Button type="submit" className="w-full">
-              Sign up
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? "Signing up..." : "Sign up"}
             </Button>
           </motion.div>
         </form>

@@ -22,10 +22,10 @@ export default function EmailVerificationPage() {
 
   async function submit(e) {
     e.preventDefault();
-    await verifyEmail(value);
-    if (!error && !isLoading) {
+    try {
+      await verifyEmail(value);
       toast.success("Email verified successfully!", { closeButton: true });
-    }
+    } catch (err) {}
   }
 
   return (

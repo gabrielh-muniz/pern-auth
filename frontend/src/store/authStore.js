@@ -31,6 +31,7 @@ export const useAuthStore = create((set) => ({
         isLoading: false,
         error: error.response?.data?.message || "An error occurred",
       });
+      throw error;
     }
   },
 
@@ -48,6 +49,7 @@ export const useAuthStore = create((set) => ({
         isLoading: false,
         error: error.response?.data?.message || "An error occurred",
       });
+      throw error;
     }
   },
 }));

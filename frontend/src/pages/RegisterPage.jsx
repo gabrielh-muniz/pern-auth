@@ -6,6 +6,8 @@ import { Label } from "@/components/ui/label";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useAuthStore } from "@/store/authStore";
+import { useNavigate } from "react-router-dom";
 
 const schema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters long").max(50),
@@ -21,12 +23,19 @@ function RegisterPage() {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
+    setError,
   } = useForm({
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = (data) => {
-    console.log(data);
+  const navigate = useNavigate();
+
+  const { signup, error } = useAuthStore();
+
+  const onSubmit = async (data) => {
+    await signup(data);
+    setError("root", { message: error });
+    if (!error) navigate("/");
   };
 
   const inputVariants = {
@@ -41,6 +50,10 @@ function RegisterPage() {
         className="bg-white p-8 rounded-lg shadow-md w-96"
       >
         <h1 className="text-2xl font-bold mb-6 text-center">Sign Up</h1>
+
+        {errors.root && (
+          <p className="mb-4 text-sm text-red-600">{errors.root.message}</p>
+        )}
 
         <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-2">

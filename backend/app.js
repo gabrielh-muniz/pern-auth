@@ -2,6 +2,7 @@ import express from "express";
 import { config } from "dotenv";
 import { router as authRouter } from "./routes/authentication.js";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 
 config();
 
@@ -11,6 +12,13 @@ const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+  })
+);
 
 app.use("/api/auth", authRouter);
 

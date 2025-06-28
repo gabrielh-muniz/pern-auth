@@ -76,7 +76,7 @@ export async function signup(req, res) {
   }
 
   // Generate a JWT token (This is wrong, it should be done in the login function)
-  // const user = result.rows[0];
+  const user = result.rows[0];
   // const jwtToken = generateJWTToken(user, process.env.SECRET_KEY, "7d");
 
   // res.cookie("token", jwtToken, {
@@ -87,7 +87,10 @@ export async function signup(req, res) {
   // Send a verification email
   await sendVerificationEmail(user.email, verificationToken);
 
-  res.status(201).json({ message: "User created successfully" });
+  res.status(201).json({
+    message: "User created successfully",
+    user: { ...user, pw: undefined },
+  });
 }
 
 /**

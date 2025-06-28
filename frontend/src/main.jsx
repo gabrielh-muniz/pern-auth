@@ -5,19 +5,31 @@ import App from "./App.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import RegisterPage from "./pages/RegisterPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
+import EmailVerificationPage from "./pages/EmailVerificationPage.jsx";
+import RootLayout from "./layouts/RootLayout.jsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <h1>Home</h1>,
-  },
-  {
-    path: "/signup",
-    element: <RegisterPage />,
-  },
-  {
-    path: "/login",
-    element: <LoginPage />,
+    element: <RootLayout />,
+    children: [
+      {
+        path: "/",
+        element: <App />,
+      },
+      {
+        path: "/signup",
+        element: <RegisterPage />,
+      },
+      {
+        path: "/login",
+        element: <LoginPage />,
+      },
+      {
+        path: "/verify-email",
+        element: <EmailVerificationPage />,
+      },
+    ],
   },
 ]);
 

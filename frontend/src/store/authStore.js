@@ -33,4 +33,21 @@ export const useAuthStore = create((set) => ({
       });
     }
   },
+
+  verifyEmail: async (code) => {
+    set({ isLoading: true, error: null });
+
+    try {
+      const response = await api
+        .post("/verify-email", { verificationToken: code })
+        .then((res) => res.data);
+
+      set({ isLoading: false, user: response.user, isAuthenticated: true });
+    } catch (error) {
+      set({
+        isLoading: false,
+        error: error.response?.data?.message || "An error occurred",
+      });
+    }
+  },
 }));

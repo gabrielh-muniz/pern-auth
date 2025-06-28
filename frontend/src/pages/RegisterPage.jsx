@@ -35,7 +35,7 @@ function RegisterPage() {
   const onSubmit = async (data) => {
     await signup(data);
     setError("root", { message: error });
-    if (!error) navigate("/");
+    if (!error) navigate("/verify-email");
   };
 
   const inputVariants = {

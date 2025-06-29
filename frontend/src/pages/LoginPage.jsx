@@ -20,8 +20,13 @@ function LoginPage() {
 
   const onSubmit = async (data) => {
     console.log(data);
-    await login(data);
-    navigate("/");
+    try {
+      await login(data);
+      navigate("/");
+    } catch (error) {
+      // Login error is already handled by setting error state in the store
+      // No need to do anything here as the error will be displayed in the UI
+    }
   };
 
   const inputVariants = {

@@ -65,7 +65,60 @@ export const useAuthStore = create((set) => ({
         .post("/login", creds)
         .then((response) => response.data);
 
-      set({ isLoading: false, user: response.user, isAuthenticated: true });
+      // After successful login, immediately fetch user data
+      const userData = await api.get("/check-auth").then((res) => res.data);
+
+      set({
+        isLoading: false,
+        user: userData.user,
+        isAuthenticated: true,
+      });
+      return true;
+    } catch (error) {
+      set({
+        isLoading: false,
+        error: error.response?.data?.message || "An error occurred",
+      });
+      throw error;
+    }
+  },
+
+  checkAuth: async () => {
+    set({ isCheckingAuth: true, error: null });
+    try {
+      const response = await api.get("/check-auth").then((res) => res.data);
+      if (!response.user) {
+        set({
+          isCheckingAuth: false,
+          user: null,
+          isAuthenticated: false,
+        });
+        return;
+      }
+      set({
+        isCheckingAuth: false,
+        user: response.user,
+        isAuthenticated: true,
+      });
+    } catch (error) {
+      // Don't set error state for auth check failures
+      // This prevents the "Token is required" message from showing on login page
+      set({
+        isCheckingAuth: false,
+        user: null,
+        isAuthenticated: false,
+        error: null, // Clear any previous errors
+      });
+      // Don't throw error for authentication checks
+      // This silently fails when user is not logged in
+    }
+  },
+
+  logout: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      await api.post("/logout");
+      set({ isLoading: false, user: null, isAuthenticated: false });
     } catch (error) {
       set({
         isLoading: false,

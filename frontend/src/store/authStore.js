@@ -52,4 +52,26 @@ export const useAuthStore = create((set) => ({
       throw error;
     }
   },
+
+  /**
+   * Function to log in a user
+   * @param {Object} creds - The credentials object containing email and password
+   * @return {Promise<void>}
+   */
+  login: async (creds) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await api
+        .post("/login", creds)
+        .then((response) => response.data);
+
+      set({ isLoading: false, user: response.user, isAuthenticated: true });
+    } catch (error) {
+      set({
+        isLoading: false,
+        error: error.response?.data?.message || "An error occurred",
+      });
+      throw error;
+    }
+  },
 }));

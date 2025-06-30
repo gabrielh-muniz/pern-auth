@@ -87,12 +87,36 @@ function LoginPage() {
             {errors.password && (
               <p className="text-sm text-red-500">{errors.password.message}</p>
             )}
+            <div className="text-right mt-1">
+              <Button
+                variant="link"
+                className="p-0 h-auto text-sm text-blue-600 hover:text-blue-800"
+                type="button"
+                onClick={() => navigate("/forgot-password")}
+              >
+                Forgot Password?
+              </Button>
+            </div>
           </div>
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? "Logging in..." : "Login"}
             </Button>
           </motion.div>
+
+          <div className="text-center mt-4">
+            <p className="text-sm text-gray-600">
+              Don't have an account?{" "}
+              <Button
+                variant="link"
+                className="p-0 h-auto text-sm text-blue-600 hover:text-blue-800"
+                type="button"
+                onClick={() => navigate("/signup")}
+              >
+                Sign Up
+              </Button>
+            </p>
+          </div>
         </form>
       </motion.div>
     </div>

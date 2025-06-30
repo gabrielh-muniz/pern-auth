@@ -127,4 +127,19 @@ export const useAuthStore = create((set) => ({
       throw error;
     }
   },
+
+  forgotPassword: async (email) => {
+    set({ isLoading: true, error: null });
+    try {
+      await api.post("/forgot-password", { email });
+      set({ isLoading: false });
+    } catch (error) {
+      set({
+        isLoading: false,
+        error: error.response?.data?.message || "An error occurred",
+      });
+      throw error;
+    }
+  },
+  clearError: () => set({ error: null }),
 }));

@@ -9,6 +9,7 @@ import { Toaster } from "@/components/ui/sonner";
 import DashboardPage from "@/pages/DashboardPage.jsx";
 import ProtectedRoute from "@/components/ProtectedRoute.jsx";
 import AuthUserRoute from "@/components/AuthUserRoute.jsx";
+import ForgotPasswordPage from "@/pages/ForgotPasswordPage.jsx";
 
 function App() {
   const { isAuthenticated, isCheckingAuth, checkAuth, user, logout } =
@@ -64,6 +65,14 @@ function App() {
           }
         />
         <Route path="/verify-email" element={<EmailVerificationPage />} />
+        <Route
+          path="/forgot-password"
+          element={
+            <AuthUserRoute>
+              <ForgotPasswordPage />
+            </AuthUserRoute>
+          }
+        />
         <Route
           path="/dashboard"
           element={

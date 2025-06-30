@@ -131,6 +131,19 @@ function RegisterPage() {
               {isSubmitting ? "Signing up..." : "Sign up"}
             </Button>
           </motion.div>
+          <div className="text-center mt-4">
+            <p className="text-sm text-gray-600">
+              Already have an account?{" "}
+              <Button
+                variant="link"
+                className="p-0 h-auto text-sm text-blue-600 hover:text-blue-800"
+                type="button"
+                onClick={() => navigate("/login")}
+              >
+                Sign in
+              </Button>
+            </p>
+          </div>
         </form>
       </motion.div>
     </div>

@@ -22,7 +22,7 @@ function LoginPage() {
     console.log(data);
     try {
       await login(data);
-      navigate("/");
+      navigate("/dashboard");
     } catch (error) {
       // Login error is already handled by setting error state in the store
       // No need to do anything here as the error will be displayed in the UI

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
 import DashboardPage from "@/pages/DashboardPage.jsx";
 import ProtectedRoute from "@/components/ProtectedRoute.jsx";
+import AuthUserRoute from "@/components/AuthUserRoute.jsx";
 
 function App() {
   const { isAuthenticated, isCheckingAuth, checkAuth, user, logout } =
@@ -47,7 +48,14 @@ function App() {
       <Routes>
         <Route path="/" element={<h1>Home</h1>} />
         <Route path="/signup" element={<RegisterPage />} />
-        <Route path="/login" element={<LoginPage />} />
+        <Route
+          path="/login"
+          element={
+            <AuthUserRoute>
+              <LoginPage />
+            </AuthUserRoute>
+          }
+        />
         <Route path="/verify-email" element={<EmailVerificationPage />} />
         <Route
           path="/dashboard"

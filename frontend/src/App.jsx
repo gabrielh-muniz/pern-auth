@@ -6,6 +6,8 @@ import { useAuthStore } from "@/store/authStore";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
+import DashboardPage from "@/pages/DashboardPage.jsx";
+import ProtectedRoute from "@/components/ProtectedRoute.jsx";
 
 function App() {
   const { isAuthenticated, isCheckingAuth, checkAuth, user, logout } =
@@ -47,6 +49,14 @@ function App() {
         <Route path="/signup" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/verify-email" element={<EmailVerificationPage />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
       <Toaster />
     </div>

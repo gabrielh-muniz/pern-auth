@@ -10,6 +10,7 @@ import DashboardPage from "@/pages/DashboardPage.jsx";
 import ProtectedRoute from "@/components/ProtectedRoute.jsx";
 import AuthUserRoute from "@/components/AuthUserRoute.jsx";
 import ForgotPasswordPage from "@/pages/ForgotPasswordPage.jsx";
+import ResetPasswordPage from "@/pages/ResetPasswordPage.jsx";
 
 function App() {
   const { isAuthenticated, isCheckingAuth, checkAuth, user, logout } =
@@ -65,6 +66,14 @@ function App() {
           }
         />
         <Route path="/verify-email" element={<EmailVerificationPage />} />
+        <Route
+          path="/reset-password"
+          element={
+            <AuthUserRoute>
+              <ResetPasswordPage />
+            </AuthUserRoute>
+          }
+        />
         <Route
           path="/forgot-password"
           element={

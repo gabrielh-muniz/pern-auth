@@ -141,5 +141,20 @@ export const useAuthStore = create((set) => ({
       throw error;
     }
   },
+
   clearError: () => set({ error: null }),
+
+  resetPassword: async (token, password) => {
+    set({ isLoading: true, error: null });
+    try {
+      await api.post("/reset-password", { token, password });
+      set({ isLoading: false });
+    } catch (error) {
+      set({
+        isLoading: false,
+        error: error.response?.data?.message || "An error occurred",
+      });
+      throw error;
+    }
+  },
 }));

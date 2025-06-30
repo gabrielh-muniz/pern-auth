@@ -264,8 +264,8 @@ export async function forgotPassword(req, res) {
  * @returns {Promise<void>}
  */
 export async function resetPassword(req, res) {
-  const { token } = req.query;
-  const { password } = req.body;
+  //const { token } = req.query;
+  const { token, password } = req.body;
 
   if (!token) return res.status(400).json({ message: "Token is required" });
   if (!password)

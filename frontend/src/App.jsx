@@ -47,7 +47,14 @@ function App() {
       {user && <Button onClick={handleLogout}>Logout</Button>}
       <Routes>
         <Route path="/" element={<h1>Home</h1>} />
-        <Route path="/signup" element={<RegisterPage />} />
+        <Route
+          path="/signup"
+          element={
+            <AuthUserRoute>
+              <RegisterPage />
+            </AuthUserRoute>
+          }
+        />
         <Route
           path="/login"
           element={

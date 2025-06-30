@@ -328,13 +328,24 @@ export async function checkAuth(req, res) {
   if (!user) return res.status(401).json({ message: "Unauthorized" });
 
   // If the user is authenticated, we could search all the information in the database
+  const [error, result] = await catchError(
+    query("SELECT id, email, name, is_verified FROM users WHERE id = $1", [
+      user.id,
+    ])
+  );
+  if (error) {
+    console.error("Error fetching user data:", error);
+    return res.status(500).json({ message: "Database error" });
+  }
+  const fetchedUser = result.rows[0];
 
   return res.status(200).json({
     success: true,
     message: "Authenticated",
     user: {
-      id: user.id,
-      email: user.email,
+      name: fetchedUser.name,
+      email: fetchedUser.email,
+      is_verified: fetchedUser.is_verified,
     },
   });
 }

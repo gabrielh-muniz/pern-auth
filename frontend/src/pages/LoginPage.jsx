@@ -2,10 +2,10 @@ import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Mail, Lock } from "lucide-react";
+import { Mail, Lock, Github } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { useAuthStore } from "@/store/authStore";
-import { useNavigate } from "react-router-dom";
+import { useAuthStore, API_BASE_URL } from "@/store/authStore";
+import { useNavigate, Link } from "react-router-dom";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -104,6 +104,30 @@ function LoginPage() {
             </Button>
           </motion.div>
 
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-2 text-muted-foreground">
+                or continue with
+              </span>
+            </div>
+          </div>
+          <div className="grid grid-cols-1">
+            {/* For know, use only the google. Need to implement the github */}
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button variant="outline" className="w-full" asChild>
+                <Link
+                  to={`${API_BASE_URL}/google`}
+                  className="flex items-center justify-center gap-2"
+                >
+                  <Mail size={18} />
+                  Google
+                </Link>
+              </Button>
+            </motion.div>
+          </div>
           <div className="text-center mt-4">
             <p className="text-sm text-gray-600">
               Don't have an account?{" "}

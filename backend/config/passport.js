@@ -1,7 +1,7 @@
 import { config } from "dotenv";
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-import { query } from "../db.js";
+import { query } from "../db/connection.js";
 import { catchError } from "../utils/errorHandler.js";
 import { generateJWTToken } from "../utils/generateToken.js";
 

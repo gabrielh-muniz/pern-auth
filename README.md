@@ -48,6 +48,31 @@ This project helped me practice:
 - Node.js and npm
 - PostgreSQL database
 
+## Database
+
+Once PostgreSQL has been installed, create a dabase and follow the SQL script below:
+
+```sql
+CREATE DATABASE pern_auth;
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+
+CREATE TABLE IF NOT EXISTS users (
+  id                             UUID        PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name                           text        NOT NULL,
+  email                          text        NOT NULL UNIQUE,
+  pw                             text        NOT NULL,
+  is_verified                    boolean     NOT NULL DEFAULT FALSE,
+  reset_pw_token                 text,
+  reset_pw_expires_at            timestamptz,
+  verification_token             text,
+  verification_token_expires_at  timestamptz,
+  created_at                     timestamptz NOT NULL DEFAULT now(),
+  provider                       text,
+  provider_id                    text        UNIQUE
+);
+```
+
 ### Installation
 
 Clone the repository and install the dependencies for both the server and the client:
@@ -93,3 +118,7 @@ The frontend will be available at `http://localhost:5173`.
 
 - `backend/` – Express server with routes and controllers.
 - `frontend/` – React application bootstrapped with Vite.
+
+```
+
+```

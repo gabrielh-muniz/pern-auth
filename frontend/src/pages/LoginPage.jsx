@@ -34,7 +34,7 @@ function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 flex-col gap-6">
       <motion.div
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
@@ -90,7 +90,7 @@ function LoginPage() {
             <div className="text-right mt-1">
               <Button
                 variant="link"
-                className="p-0 h-auto text-sm text-blue-600 hover:text-blue-800"
+                className="p-0 h-auto text-xs hover:text-blue-800 cursor-pointer"
                 type="button"
                 onClick={() => navigate("/forgot-password")}
               >
@@ -99,7 +99,11 @@ function LoginPage() {
             </div>
           </div>
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button
+              type="submit"
+              className="w-full cursor-pointer"
+              disabled={isLoading}
+            >
               {isLoading ? "Logging in..." : "Login"}
             </Button>
           </motion.div>
@@ -133,7 +137,7 @@ function LoginPage() {
               Don't have an account?{" "}
               <Button
                 variant="link"
-                className="p-0 h-auto text-sm text-blue-600 hover:text-blue-800"
+                className="p-0 h-auto text-sm hover:text-blue-800 cursor-pointer"
                 type="button"
                 onClick={() => navigate("/signup")}
               >
@@ -143,6 +147,10 @@ function LoginPage() {
           </div>
         </form>
       </motion.div>
+      <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
+        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
+        and <a href="#">Privacy Policy</a>.
+      </div>
     </div>
   );
 }

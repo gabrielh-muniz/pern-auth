@@ -136,11 +136,11 @@ function RegisterPage() {
               Already have an account?{" "}
               <Button
                 variant="link"
-                className="p-0 h-auto text-sm text-blue-600 hover:text-blue-800"
+                className="p-0 h-auto text-sm hover:text-blue-800 cursor-pointer"
                 type="button"
                 onClick={() => navigate("/login")}
               >
-                Sign in
+                Login
               </Button>
             </p>
           </div>

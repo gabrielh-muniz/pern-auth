@@ -9,6 +9,9 @@ import {
   sendWelcomeEmail,
 } from "../services/email.js";
 import crypto from "crypto";
+import { config } from "dotenv";
+
+config();
 
 /**
  * Signup controller function
@@ -348,4 +351,23 @@ export async function checkAuth(req, res) {
       is_verified: fetchedUser.is_verified,
     },
   });
+}
+
+/**
+ * OAuth controller callback function
+ * @param {Object} req - The request object
+ * @param {Object} res - The response object
+ * @returns {Promise<void>}
+ */
+export async function oauthCallback(req, res) {
+  const { jwtToken } = req.user || {};
+  if (!jwtToken) {
+    console.error("No JWT token found");
+    return res.redirect(`${process.env.FRONTEND_URL}/`);
+  }
+  res.cookie("token", jwtToken, {
+    httpOnly: true,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
+  res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
 }

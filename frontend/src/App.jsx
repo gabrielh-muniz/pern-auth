@@ -6,11 +6,12 @@ import { useAuthStore } from "@/store/authStore";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
-import DashboardPage from "@/pages/DashboardPage.jsx";
+//import DashboardPage from "@/pages/DashboardPage.jsx";
 import ProtectedRoute from "@/components/ProtectedRoute.jsx";
 import AuthUserRoute from "@/components/AuthUserRoute.jsx";
 import ForgotPasswordPage from "@/pages/ForgotPasswordPage.jsx";
 import ResetPasswordPage from "@/pages/ResetPasswordPage.jsx";
+import DashboardLayout from "@/layouts/DashboardLayout.jsx";
 
 function App() {
   const { isAuthenticated, isCheckingAuth, checkAuth, user, logout } =
@@ -83,10 +84,10 @@ function App() {
           }
         />
         <Route
-          path="/dashboard"
+          path="/dashboard/*"
           element={
             <>
-              <DashboardPage />
+              <DashboardLayout />
             </>
           }
         />

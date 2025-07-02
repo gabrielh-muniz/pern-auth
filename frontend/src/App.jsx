@@ -12,6 +12,8 @@ import AuthUserRoute from "@/components/AuthUserRoute.jsx";
 import ForgotPasswordPage from "@/pages/ForgotPasswordPage.jsx";
 import ResetPasswordPage from "@/pages/ResetPasswordPage.jsx";
 import DashboardLayout from "@/layouts/DashboardLayout.jsx";
+import GamePage from "@/pages/GamePage.jsx";
+import LeaderboardPage from "@/pages/LeaderboardPage.jsx";
 
 function App() {
   const { isAuthenticated, isCheckingAuth, checkAuth, user, logout } =
@@ -90,7 +92,10 @@ function App() {
               <DashboardLayout />
             </>
           }
-        />
+        >
+          <Route path="game" element={<GamePage />} />
+          <Route path="leaderboard" element={<LeaderboardPage />} />
+        </Route>
       </Routes>
       <Toaster />
     </div>

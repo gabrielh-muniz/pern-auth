@@ -14,6 +14,7 @@ import {
   SidebarGroup,
   SidebarGroupLabel,
 } from "@/components/ui/sidebar";
+import { Link } from "react-router-dom";
 
 const data = {
   user: {
@@ -24,12 +25,12 @@ const data = {
   menu: [
     {
       title: "Game",
-      url: "#",
+      url: "/dashboard/game",
       icon: Gamepad2,
     },
     {
       title: "Leaderboard",
-      url: "#",
+      url: "/dashboard/leaderboard",
       icon: Trophy,
     },
   ],
@@ -50,10 +51,10 @@ export function AppSidebar({ ...props }) {
               {data.menu.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url}>
+                    <Link to={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

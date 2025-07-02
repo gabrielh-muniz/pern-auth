@@ -13,6 +13,7 @@ import {
   SidebarInset,
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
+import { Outlet } from "react-router-dom";
 
 export default function Layout({ children }) {
   return (
@@ -36,7 +37,9 @@ export default function Layout({ children }) {
             </BreadcrumbList>
           </Breadcrumb>
         </header>
-        <main>{children}</main>
+        <main>
+          <Outlet />
+        </main>
       </SidebarInset>
     </SidebarProvider>
   );

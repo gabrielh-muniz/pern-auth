@@ -40,7 +40,7 @@ function GamePage() {
   }, []);
 
   const getLevel = () => Math.floor(clicks / 10) + 1;
-  const getProgress = () => (clicks % 10) / 10;
+  const getProgress = () => (clicks % 10) * 10;
 
   const handleClickIncrement = async () => {
     if (isSubmitting) return; // This prevents multiple clicks

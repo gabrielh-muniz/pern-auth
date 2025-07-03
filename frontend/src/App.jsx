@@ -80,9 +80,9 @@ function App() {
         <Route
           path="/dashboard/*"
           element={
-            <ProtectedRoute>
+            <>
               <DashboardLayout />
-            </ProtectedRoute>
+            </>
           }
         >
           <Route index element={<GamePage />} />

@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS users (
   id                             UUID        PRIMARY KEY DEFAULT uuid_generate_v4(),
   name                           text        NOT NULL,
   email                          text        NOT NULL UNIQUE,
-  pw                             text        NOT NULL,
+  pw                             text,
   is_verified                    boolean     NOT NULL DEFAULT FALSE,
   reset_pw_token                 text,
   reset_pw_expires_at            timestamptz,
@@ -76,6 +76,13 @@ CREATE TABLE IF NOT EXISTS users (
   created_at                     timestamptz NOT NULL DEFAULT now(),
   provider                       text,
   provider_id                    text        UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS click_stats (
+  id              UUID        PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id         UUID        NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+  clicks          int         NOT NULL DEFAULT 0,
+  last_click_at   timestamptz NOT NULL DEFAULT now()
 );
 ```
 

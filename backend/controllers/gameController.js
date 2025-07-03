@@ -47,3 +47,25 @@ export async function incrementClickCount(req, res) {
 
   return res.status(200).json(gameData.rows[0]);
 }
+
+/**
+ * Function to fetch the leaderboard data.
+ * @param {Object} req - The request object containing user information.
+ * @param {Object} res - The response object to send the leaderboard data.
+ * @returns {Object} - Returns the leaderboard data.
+ */
+export async function fetchLeaderboard(req, res) {
+  const [error, leaderboardData] = await catchError(
+    query(`SELECT u.id,
+            u.name  AS username,
+            c.clicks,
+            c.click_level
+       FROM click_stats c
+       JOIN users      u ON u.id = c.user_id
+   ORDER BY c.clicks DESC
+      LIMIT 10;`)
+  );
+  if (error) return res.status(500).json({ message: "Database query failed" });
+
+  return res.status(200).json({ leaderboard: leaderboardData.rows });
+}

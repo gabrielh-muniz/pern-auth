@@ -10,6 +10,7 @@ function GamePage() {
   const [level, setLevel] = useState(1);
   const [clicks, setClicks] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchGameData = async () => {
@@ -38,6 +39,32 @@ function GamePage() {
     fetchGameData();
   }, []);
 
+  const getLevel = () => Math.floor(clicks / 10) + 1;
+  const getProgress = () => (clicks % 10) / 10;
+
+  const handleClickIncrement = async () => {
+    if (isSubmitting) return; // This prevents multiple clicks
+    setIsSubmitting(true);
+    setClicks((prev) => prev + 1);
+    try {
+      await axios.post(
+        `${API_URL}/increment`,
+        {},
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    } catch (error) {
+      console.error("Error incrementing click count:", error);
+      setClicks((prev) => prev - 1);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background flex justify-center items-center p-4">
       <div className="w-full max-w-md">
@@ -47,12 +74,13 @@ function GamePage() {
               <div className="flex items-center justify-center gap-2 mb-2">
                 <Trophy className="w-5 h-5 text-primary" />
                 <span className="text-foreground font-bold">
-                  {loading ? "..." : `Level ${level}`}
+                  {loading ? "..." : `Level ${getLevel()}`}
                 </span>
               </div>
               <div className="w-full bg-secondary rounded-full h-2">
                 <div
                   className={`h-2 rounded-full bg-gradient-to-r transition-all duration-500`}
+                  style={{ width: `${getProgress()}%` }}
                 />
               </div>
             </div>
@@ -67,6 +95,8 @@ function GamePage() {
 
             <Button
               size="lg"
+              disabled={loading || isSubmitting}
+              onClick={handleClickIncrement}
               className={`w-full h-12 text-md font-semibold bg-primary`}
             >
               CLICK ME!

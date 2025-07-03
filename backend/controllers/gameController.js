@@ -33,13 +33,14 @@ export async function incrementClickCount(req, res) {
   const [error, gameData] = await catchError(
     query(
       `
-      INSERT INTO click_stats (user_id, clicks, click_level, last_click_at) VALUES ($1, 1, $2, NOW())
+      INSERT INTO click_stats (user_id, clicks, last_click_at) VALUES ($1, 1, NOW())
       ON CONFLICT (user_id) 
-      DO UPDATE SET clicks = click_stats.clicks + 1, click_level = $2, last_click_at = EXCLUDED.last_click_at RETURNING clicks, click_level;
+      DO UPDATE SET clicks = click_stats.clicks + 1, last_click_at = EXCLUDED.last_click_at RETURNING clicks;
       `,
-      [userId, clickLevel]
+      [userId]
     )
   );
+
   if (error) return res.status(500).json({ message: "Database query failed" });
 
   if (gameData.rows.length === 0) console.log("Now rows");

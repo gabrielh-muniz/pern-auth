@@ -104,7 +104,7 @@ function LeaderboardPage() {
                     className={rank <= 3 ? "bg-muted/50" : ""}
                   >
                     <TableCell className="font-medium">
-                      <div className="flex items-center justify-center">#1</div>
+                      <div className="flex items-center justify-center">{`#${rank}`}</div>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-3">

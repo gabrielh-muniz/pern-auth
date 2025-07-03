@@ -50,7 +50,10 @@ async function findOrCreateUser(name, email, provider, providerId) {
         [name, email, provider, providerId]
       )
     );
-    if (errorInsert) throw new Error("Database insert failed");
+    if (errorInsert)
+      throw new Error(
+        `Database insert failed: ${errorInsert.message || errorInsert}`
+      );
 
     return newUser.rows[0];
   } catch (error) {

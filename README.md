@@ -29,6 +29,12 @@ Forgot password
 Reset password
 ![image](https://github.com/user-attachments/assets/42df7fea-90e0-4ee2-9379-de0086e5a2e7)
 
+Dashboard - game
+![image](https://github.com/user-attachments/assets/aaceb5a2-4eb3-470a-83ba-82b68875dbb0)
+
+Dashboard - leaderboard
+![image](https://github.com/user-attachments/assets/28485c1c-ba41-46fa-be2f-960fc31731da)
+
 ## What I learned
 
 This project helped me practice:

@@ -1,5 +1,9 @@
 import { Router } from "express";
-import { verifyToken } from "../middlewares/verifyToken.js";
+import {
+  incrementClickCount,
+  fetchGameData,
+} from "../controllers/gameController.js";
+import { verifyToken } from "../middleware/verifyToken.js";
 
 export const router = Router();
 

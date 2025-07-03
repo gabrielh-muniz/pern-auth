@@ -1,6 +1,7 @@
 import express from "express";
 import { config } from "dotenv";
 import { router as authRouter } from "./routes/authentication.js";
+import { router as gameRouter } from "./routes/game.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 
@@ -21,6 +22,7 @@ app.use(
 );
 
 app.use("/api/auth", authRouter);
+app.use("/api/game", gameRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

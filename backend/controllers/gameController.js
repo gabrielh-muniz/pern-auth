@@ -15,7 +15,9 @@ export async function fetchGameData(req, res) {
   );
   if (error) return res.status(500).json({ message: "Database query failed" });
 
-  return res.status(200).json({ gameData });
+  const data = gameData.rows[0];
+
+  return res.status(200).json({ gameData: data });
 }
 
 /**
@@ -28,17 +30,19 @@ export async function incrementClickCount(req, res) {
   const userId = req.user.id;
   const { clickLevel } = req.body;
 
-  const [error, { rows }] = await catchError(
+  const [error, gameData] = await catchError(
     query(
       `
       INSERT INTO click_stats (user_id, clicks, click_level, last_click_at) VALUES ($1, 1, $2, NOW())
       ON CONFLICT (user_id) 
-      DO UPDATE SET clicks = click_stats.clicks + 1, click_level = $2, last_click_at = EXCLUDED.last_click_at RETURNING *
+      DO UPDATE SET clicks = click_stats.clicks + 1, click_level = $2, last_click_at = EXCLUDED.last_click_at RETURNING clicks, click_level;
       `,
       [userId, clickLevel]
     )
   );
   if (error) return res.status(500).json({ message: "Database query failed" });
 
-  return res.status(200).json(rows[0]);
+  if (gameData.rows.length === 0) console.log("Now rows");
+
+  return res.status(200).json(gameData.rows[0]);
 }

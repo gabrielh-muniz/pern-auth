@@ -15,13 +15,9 @@ import {
   SidebarGroupLabel,
 } from "@/components/ui/sidebar";
 import { Link } from "react-router-dom";
+import { useAuthStore } from "@/store/authStore";
 
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   menu: [
     {
       title: "Game",
@@ -37,10 +33,25 @@ const data = {
 };
 
 export function AppSidebar({ ...props }) {
+  const { user } = useAuthStore();
+
+  // Default user data in case auth user is not available
+  const userData = user
+    ? {
+        name: user.name || "User",
+        email: user.email || "",
+        avatar: user.avatar || "",
+      }
+    : {
+        name: "Guest",
+        email: "Not logged in",
+        avatar: "",
+      };
+
   return (
     <Sidebar {...props}>
       <SidebarHeader className="border-sidebar-border h-16 border-b">
-        <NavUser user={data.user} />
+        <NavUser user={userData} />
       </SidebarHeader>
       <SidebarContent>
         <SidebarSeparator className="mx-0" />

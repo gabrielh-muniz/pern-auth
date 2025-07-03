@@ -16,8 +16,7 @@ import GamePage from "@/pages/GamePage.jsx";
 import LeaderboardPage from "@/pages/LeaderboardPage.jsx";
 
 function App() {
-  const { isAuthenticated, isCheckingAuth, checkAuth, user, logout } =
-    useAuthStore();
+  const { isAuthenticated, isCheckingAuth, checkAuth } = useAuthStore();
 
   useEffect(() => {
     const checkUserAuth = async () => {
@@ -41,15 +40,8 @@ function App() {
     );
   }
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-    } catch (error) {}
-  };
-
   return (
     <div>
-      {user && <Button onClick={handleLogout}>Logout</Button>}
       <Routes>
         <Route path="/" element={<h1>Home</h1>} />
         <Route

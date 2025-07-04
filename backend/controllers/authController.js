@@ -1,8 +1,11 @@
 import { catchError } from "../utils/errorHandler.js";
 import { query } from "../db/connection.js";
 import bcrypt from "bcrypt";
-import { generateVerificationToken } from "../utils/generateToken.js";
-import { generateJWTToken } from "../utils/generateToken.js";
+import {
+  generateVerificationToken,
+  generateJWTToken,
+  generateJWTRefreshToken,
+} from "../utils/generateToken.js";
 import {
   sendPasswordResetEmail,
   sendVerificationEmail,
@@ -189,12 +192,39 @@ export async function login(req, res) {
       .status(403)
       .json({ message: "Email not verified! Please check your inbox" });
 
-  // Generate a JWT token
+  // Generate a JWT access token
   const jwtToken = generateJWTToken(user, process.env.SECRET_KEY, "7d");
+
+  // Generate a JWT refresh token
+  const refreshToken = generateJWTRefreshToken(
+    user,
+    process.env.SECRET_REFRESH_KEY,
+    "30d"
+  );
+  const expiresAt = new Date(
+    Date.now() + 30 * 24 * 60 * 60 * 1000
+  ).toISOString();
+
+  // Store the refresh token in the database
+  const [errorRefresh, resultRefresh] = await catchError(
+    query(
+      "INSERT INTO refresh_tokens (refresh_token, user_id, expires_at) VALUES ($1, $2, $3)",
+      [refreshToken, user.id, expiresAt]
+    )
+  );
+  if (errorRefresh) {
+    console.error(`Error storing refresh token: ${errorRefresh.message}`);
+    return res.status(500).json({ message: "Database error" });
+  }
 
   res.cookie("token", jwtToken, {
     httpOnly: true,
     maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
+
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    maxAge: 30 * 24 * 60 * 60 * 1000,
   });
 
   res.status(200).json({ message: "Login successful" });

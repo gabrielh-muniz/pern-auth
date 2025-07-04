@@ -91,7 +91,6 @@ CREATE TABLE IF NOT EXISTS refresh_tokens (
   expires_at      timestamptz NOT NULL,
   created_at      timestamptz NOT NULL DEFAULT now()
 );
-
 ```
 
 ### Installation
@@ -139,7 +138,3 @@ The frontend will be available at `http://localhost:5173`.
 
 - `backend/` – Express server with routes and controllers.
 - `frontend/` – React application bootstrapped with Vite.
-
-```
-
-```

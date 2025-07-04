@@ -84,6 +84,14 @@ CREATE TABLE IF NOT EXISTS click_stats (
   clicks          int         NOT NULL DEFAULT 0,
   last_click_at   timestamptz NOT NULL DEFAULT now()
 );
+
+CREATE TABLE IF NOT EXISTS refresh_tokens (
+  refresh_token   text        PRIMARY KEY,
+  user_id         UUID        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  expires_at      timestamptz NOT NULL,
+  created_at      timestamptz NOT NULL DEFAULT now()
+);
+
 ```
 
 ### Installation

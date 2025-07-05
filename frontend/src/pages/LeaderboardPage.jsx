@@ -11,7 +11,10 @@ import {
 import { Trophy, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
-import axios from "axios";
+//import axios from "axios";
+import api, { API_BASE_URL } from "@/lib/api";
+
+const API_URL = `${API_BASE_URL}/game`;
 
 function LeaderboardPage() {
   const [leaderboardData, setLeaderboardData] = useState([]);
@@ -20,15 +23,16 @@ function LeaderboardPage() {
   async function fetchLeaderboardData() {
     setIsLoading(true);
     try {
-      const response = await axios.get(
-        "http://localhost:3000/api/game/leaderboard",
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      // const response = await axios.get(
+      //   "http://localhost:3000/api/game/leaderboard",
+      //   {
+      //     withCredentials: true,
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //   }
+      // );
+      const response = await api.get(`${API_URL}/leaderboard`);
       setLeaderboardData(response.data.leaderboard || []);
     } catch (error) {
       console.error("Error fetching leaderboard data:", error);

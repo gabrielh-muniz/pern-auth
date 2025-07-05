@@ -96,10 +96,13 @@ passport.use(
         );
 
         // Store the refresh token in the database
+        const expiresAt = new Date(
+          Date.now() + 30 * 24 * 60 * 60 * 1000
+        ).toISOString();
         const [errorStore, _] = await catchError(
           query(
-            "INSERT INTO refresh_tokens (refresh_token, user_id) VALUES ($1, $2)",
-            [refreshToken, user.id]
+            "INSERT INTO refresh_tokens (refresh_token, user_id, expires_at) VALUES ($1, $2, $3)",
+            [refreshToken, user.id, expiresAt]
           )
         );
         if (errorStore)

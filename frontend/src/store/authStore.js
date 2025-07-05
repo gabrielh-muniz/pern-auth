@@ -1,15 +1,17 @@
 import { create } from "zustand";
-import axios from "axios";
+//import axios from "axios";
+import api, { API_BASE_URL } from "@/lib/api";
 
-export const API_BASE_URL = "http://localhost:3000/api/auth";
+// export const API_BASE_URL = "http://localhost:3000/api/auth";
 
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  withCredentials: true,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
+// const api = axios.create({
+//   baseURL: API_BASE_URL,
+//   withCredentials: true,
+//   headers: {
+//     "Content-Type": "application/json",
+//   },
+// });
+export const AUTH_URL = `${API_BASE_URL}/auth`;
 
 export const useAuthStore = create((set) => ({
   user: null,
@@ -22,7 +24,7 @@ export const useAuthStore = create((set) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await api
-        .post("/signup", userData)
+        .post("/auth/signup", userData)
         .then((res) => res.data);
 
       set({ isLoading: false, user: response.user, isAuthenticated: true });
@@ -40,7 +42,7 @@ export const useAuthStore = create((set) => ({
 
     try {
       const response = await api
-        .post("/verify-email", { verificationToken: code })
+        .post("/auth/verify-email", { verificationToken: code })
         .then((res) => res.data);
 
       set({ isLoading: false, user: response.user, isAuthenticated: true });
@@ -62,11 +64,13 @@ export const useAuthStore = create((set) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await api
-        .post("/login", creds)
+        .post("/auth/login", creds)
         .then((response) => response.data);
 
       // After successful login, immediately fetch user data
-      const userData = await api.get("/check-auth").then((res) => res.data);
+      const userData = await api
+        .get("/auth/check-auth")
+        .then((res) => res.data);
 
       set({
         isLoading: false,
@@ -86,7 +90,9 @@ export const useAuthStore = create((set) => ({
   checkAuth: async () => {
     set({ isCheckingAuth: true, error: null });
     try {
-      const response = await api.get("/check-auth").then((res) => res.data);
+      const response = await api
+        .get("/auth/check-auth")
+        .then((res) => res.data);
       if (!response.user) {
         set({
           isCheckingAuth: false,
@@ -117,7 +123,7 @@ export const useAuthStore = create((set) => ({
   logout: async () => {
     set({ isLoading: true, error: null });
     try {
-      await api.post("/logout");
+      await api.post("/auth/logout");
       set({ isLoading: false, user: null, isAuthenticated: false });
     } catch (error) {
       set({
@@ -131,7 +137,7 @@ export const useAuthStore = create((set) => ({
   forgotPassword: async (email) => {
     set({ isLoading: true, error: null });
     try {
-      await api.post("/forgot-password", { email });
+      await api.post("/auth/forgot-password", { email });
       set({ isLoading: false });
     } catch (error) {
       set({
@@ -147,7 +153,7 @@ export const useAuthStore = create((set) => ({
   resetPassword: async (token, password) => {
     set({ isLoading: true, error: null });
     try {
-      await api.post("/reset-password", { token, password });
+      await api.post("/auth/reset-password", { token, password });
       set({ isLoading: false });
     } catch (error) {
       set({

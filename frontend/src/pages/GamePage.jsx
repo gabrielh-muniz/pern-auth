@@ -2,9 +2,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
-import axios from "axios";
+//import axios from "axios";
+import api, { API_BASE_URL } from "@/lib/api";
 
-const API_URL = "http://localhost:3000/api/game";
+//const API_URL = "http://localhost:3000/api/game";
+const API_URL = `${API_BASE_URL}/game`;
 
 function GamePage() {
   const [level, setLevel] = useState(1);
@@ -16,13 +18,13 @@ function GamePage() {
     const fetchGameData = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`${API_URL}/me`, {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
+        // const response = await axios.get(`${API_URL}/me`, {
+        //   withCredentials: true,
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        // });
+        const response = await api.get(`${API_URL}/me`);
         if (response.data.gameData) {
           const { clicks, click_level } = response.data.gameData;
           setClicks(clicks);
@@ -47,16 +49,17 @@ function GamePage() {
     setIsSubmitting(true);
     setClicks((prev) => prev + 1);
     try {
-      await axios.post(
-        `${API_URL}/increment`,
-        {},
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      // await axios.post(
+      //   `${API_URL}/increment`,
+      //   {},
+      //   {
+      //     withCredentials: true,
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //   }
+      // );
+      await api.post(`${API_URL}/increment`);
     } catch (error) {
       console.error("Error incrementing click count:", error);
       setClicks((prev) => prev - 1);

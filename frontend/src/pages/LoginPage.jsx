@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Mail, Lock, Github } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { useAuthStore, API_BASE_URL } from "@/store/authStore";
+import { useAuthStore, AUTH_URL } from "@/store/authStore";
 import { useNavigate, Link } from "react-router-dom";
 
 function LoginPage() {
@@ -123,7 +123,7 @@ function LoginPage() {
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button variant="outline" className="w-full" asChild>
                 <Link
-                  to={`${API_BASE_URL}/google`}
+                  to={`${AUTH_URL}/google`}
                   className="flex items-center justify-center gap-2"
                 >
                   <Mail size={18} />

@@ -28,7 +28,7 @@ export async function fetchGameData(req, res) {
  */
 export async function incrementClickCount(req, res) {
   const userId = req.user.id;
-  const { clickLevel } = req.body;
+  //const { clickLevel } = req.body;
 
   const [error, gameData] = await catchError(
     query(

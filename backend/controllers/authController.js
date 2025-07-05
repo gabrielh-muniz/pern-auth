@@ -237,7 +237,25 @@ export async function login(req, res) {
  * @returns {Promise<void>}
  */
 export async function logout(req, res) {
+  const refreshToken = req.cookies.refreshToken;
+
+  if (refreshToken) {
+    // Delete the refresh token from the database
+    const [errorDelete, _] = await catchError(
+      query("DELETE FROM refresh_tokens WHERE refresh_token = $1", [
+        refreshToken,
+      ])
+    );
+    if (errorDelete) {
+      console.error("Error deleting refresh token:", errorDelete);
+      return res
+        .status(500)
+        .json({ message: `Database error ${errorDelete.message}` });
+    }
+  }
+
   res.clearCookie("token");
+  res.clearCookie("refreshToken");
   res.status(200).json({ message: "Logout successful" });
 }
 

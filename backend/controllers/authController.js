@@ -401,3 +401,109 @@ export async function oauthCallback(req, res) {
   });
   res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
 }
+
+/**
+ * Function to refresh the JWT token
+ * @param {Object} req - The request object
+ * @param {Object} res - The response object
+ * @returns {Promise<void>}
+ */
+export async function refreshToken(req, res) {
+  const { refreshToken: oldToken } = req.cookies;
+
+  if (!oldToken) return res.status(401).json({ message: "Unauthorized" });
+
+  // Verify the refresh token in the database
+  const [errorLookup, resultLookup] = await catchError(
+    query("SELECT * FROM refresh_tokens WHERE refresh_token = $1", [oldToken])
+  );
+  if (errorLookup) {
+    console.error("Error looking up refresh token:", errorLookup);
+    return res
+      .status(500)
+      .json({ message: `Database error ${errorLookup.message}` });
+  }
+  if (resultLookup.rows.length === 0)
+    return res.status(403).json({ message: "Forbidden" });
+
+  // Verify if the refresh token is still valid
+  const refreshTokenData = resultLookup.rows[0];
+
+  if (new Date(refreshTokenData.expires_at) < new Date()) {
+    const [errorDelete, resultDelete] = await catchError(
+      query("DELETE FROM refresh_tokens WHERE refresh_token = $1", [
+        refreshTokenData.refresh_token,
+      ])
+    );
+    if (errorDelete) {
+      console.error("Error deleting expired refresh token:", errorDelete);
+      return res
+        .status(500)
+        .json({ message: `Database error ${errorDelete.message}` });
+    }
+    return res.status(403).json({ message: "Refresh token expired" });
+  }
+
+  // Successfully found the refresh token
+
+  // Verify the user associated with the refresh token
+  const [errorUser, resultUser] = await catchError(
+    query("SELECT * FROM users WHERE id = $1", [refreshTokenData.user_id])
+  );
+  if (errorUser) {
+    console.error("Error fetching user data:", errorUser);
+    return res
+      .status(500)
+      .json({ message: `Database error ${errorUser.message}` });
+  }
+
+  const user = resultUser.rows[0];
+
+  // Generate a new JWT access and refresh token
+  const accessToken = generateJWTToken(user, process.env.SECRET_KEY, "7d");
+  const refreshToken = generateJWTRefreshToken(
+    user,
+    process.env.SECRET_REFRESH_KEY,
+    "30d"
+  );
+  const expiresAt = new Date(
+    Date.now() + 30 * 24 * 60 * 60 * 1000
+  ).toISOString();
+
+  // Delete the old refresh token
+  const [errorDeleteOld, resultDeleteOld] = await catchError(
+    query("DELETE FROM refresh_tokens WHERE refresh_token = $1", [oldToken])
+  );
+  if (errorDeleteOld) {
+    console.error("Error deleting old refresh token:", errorDeleteOld);
+    return res
+      .status(500)
+      .json({ message: `Database error ${errorDeleteOld.message}` });
+  }
+
+  // Store the new refresh token in the database
+  const [errorInsert, resultInsert] = await catchError(
+    query(
+      "INSERT INTO refresh_tokens (refresh_token, user_id, expires_at) VALUES ($1, $2, $3)",
+      [refreshToken, user.id, expiresAt]
+    )
+  );
+  if (errorInsert) {
+    console.error("Error storing new refresh token:", errorInsert);
+    return res
+      .status(500)
+      .json({ message: `Database error ${errorInsert.message}` });
+  }
+
+  // Set the new tokens in cookies
+  res.cookie("token", accessToken, {
+    httpOnly: true,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+  });
+
+  res.status(200).json({ message: "Tokens refreshed successfully" });
+}

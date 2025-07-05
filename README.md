@@ -9,6 +9,7 @@ A full stack authentication example built with **PostgreSQL**, **Express**, **Re
 - Login and logout with JWT.
 - Google OAuth login using [Passport.js](https://www.passportjs.org/).
 - Password reset flow with reset tokens.
+- Refresh token rotation for persistent and secure sessions
 - Endpoint to check authentication status.
 - React frontend powered by Zustand for state and React Hook Form for forms.
 
@@ -54,7 +55,7 @@ This project helped me practice:
 - Node.js and npm
 - PostgreSQL database
 
-## Database
+### Database
 
 Once PostgreSQL has been installed, create a dabase and follow the SQL script below:
 
@@ -92,6 +93,10 @@ CREATE TABLE IF NOT EXISTS refresh_tokens (
   created_at      timestamptz NOT NULL DEFAULT now()
 );
 ```
+
+### Frontend Token Refresh
+
+The React app uses an Axios instance located at `src/lib/api.js` which includes a response interceptor. When any API call receives a `401` status, the interceptor requests `/api/auth/refresh` to obtain a new access token and then retries the original request. This makes refresh token rotation seamless for the user.
 
 ### Installation
 

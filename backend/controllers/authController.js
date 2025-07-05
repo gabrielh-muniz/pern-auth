@@ -198,7 +198,7 @@ export async function login(req, res) {
   // Generate a JWT refresh token
   const refreshToken = generateJWTRefreshToken(
     user,
-    process.env.SECRET_REFRESH_KEY,
+    process.env.REFRESH_SECRET_KEY,
     "30d"
   );
   const expiresAt = new Date(
@@ -486,7 +486,7 @@ export async function refreshToken(req, res) {
   const accessToken = generateJWTToken(user, process.env.SECRET_KEY, "7d");
   const refreshToken = generateJWTRefreshToken(
     user,
-    process.env.SECRET_REFRESH_KEY,
+    process.env.REFRESH_SECRET_KEY,
     "30d"
   );
   const expiresAt = new Date(

@@ -8,6 +8,7 @@ import {
   resetPassword,
   checkAuth,
   oauthCallback,
+  refreshToken,
 } from "../controllers/authController.js";
 import { verifyToken } from "../middleware/verifyToken.js";
 import passport from "../config/passport.js";
@@ -22,6 +23,8 @@ router.post("/forgot-password", forgotPassword);
 router.post("/reset-password", resetPassword);
 
 router.get("/check-auth", verifyToken, checkAuth);
+
+router.post("/refresh-token", refreshToken);
 
 router.get(
   "/google",

@@ -3,7 +3,10 @@ import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { query } from "../db/connection.js";
 import { catchError } from "../utils/errorHandler.js";
-import { generateJWTToken } from "../utils/generateToken.js";
+import {
+  generateJWTToken,
+  generateJWTRefreshToken,
+} from "../utils/generateToken.js";
 
 config();
 
@@ -85,7 +88,26 @@ passport.use(
           "7d"
         );
 
-        done(null, { token });
+        // Generate a refresh token
+        const refreshToken = generateJWTRefreshToken(
+          { id: user.id, email: user.email, name: user.name },
+          process.env.REFRESH_SECRET_KEY,
+          "30d"
+        );
+
+        // Store the refresh token in the database
+        const [errorStore, _] = await catchError(
+          query(
+            "INSERT INTO refresh_tokens (refresh_token, user_id) VALUES ($1, $2)",
+            [refreshToken, user.id]
+          )
+        );
+        if (errorStore)
+          return done(
+            new Error(`Error storing refresh token: ${errorStore.message}`)
+          );
+
+        done(null, { token, refreshToken });
       } catch (error) {
         return done(
           new Error(`Error processing Google profile: ${error.message}`)
